@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+# E2EE keys & local databases
+keys/
+*.key
+*.pem
+*.db
+*.sqlite
+*.sqlite3
+recent_chats.json
+
+# Python & uv
+.venv/
+__pycache__/
+*.pyc
+
+# PyInstaller & Inno Setup build outputs
+build/
+dist/
+installer_output/
+*.spec
