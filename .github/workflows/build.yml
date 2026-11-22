@@ -20,7 +20,7 @@ jobs:
 
       - name: Build RexChat.exe
         run: |
-          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --icon=icon.ico --add-data "config.txt;." --add-data "icon.ico;." --collect-all textual rex_chat_ui.py
+          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --icon=icon.ico --add-data "config.txt;." --add-data "icon.ico;." --collect-all textual --collect-all nacl --hidden-import=_cffi_backend rex_chat_ui.py
 
       - name: Build Installer with Inno Setup
         run: iscc installer.iss
@@ -41,7 +41,7 @@ jobs:
 
       - name: Build RexChat for Linux
         run: |
-          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --add-data "config.txt:." --add-data "icon.ico:." --collect-all textual rex_chat_ui.py
+          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --add-data "config.txt:." --add-data "icon.ico:." --collect-all textual --collect-all nacl --hidden-import=_cffi_backend rex_chat_ui.py
           cp config.txt dist/RexChat/
           tar -czf RexChat-Linux.tar.gz -C dist RexChat
 
@@ -61,7 +61,7 @@ jobs:
 
       - name: Build RexChat for macOS
         run: |
-          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --add-data "config.txt:." --add-data "icon.ico:." --collect-all textual rex_chat_ui.py
+          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --add-data "config.txt:." --add-data "icon.ico:." --collect-all textual --collect-all nacl --hidden-import=_cffi_backend rex_chat_ui.py
           cp config.txt dist/RexChat/
           ditto -c -k --sequesterRsrc --keepParent dist/RexChat RexChat-macOS.zip
 
