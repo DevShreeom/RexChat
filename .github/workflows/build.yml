@@ -1,0 +1,72 @@
+name: Build & Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build RexChat.exe
+        run: |
+          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --icon=icon.ico --add-data "config.txt;." --add-data "icon.ico;." --collect-all textual rex_chat_ui.py
+
+      - name: Build Installer with Inno Setup
+        run: iscc installer.iss
+
+      - name: Publish Windows Installer to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer_output/RexChat-Setup.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build RexChat for Linux
+        run: |
+          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --add-data "config.txt:." --add-data "icon.ico:." --collect-all textual rex_chat_ui.py
+          cp config.txt dist/RexChat/
+          tar -czf RexChat-Linux.tar.gz -C dist RexChat
+
+      - name: Publish Linux Archive to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: RexChat-Linux.tar.gz
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Build RexChat for macOS
+        run: |
+          uv run --with pyinstaller pyinstaller --onedir --name "RexChat" --add-data "config.txt:." --add-data "icon.ico:." --collect-all textual rex_chat_ui.py
+          cp config.txt dist/RexChat/
+          ditto -c -k --sequesterRsrc --keepParent dist/RexChat RexChat-macOS.zip
+
+      - name: Publish macOS Archive to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: RexChat-macOS.zip
